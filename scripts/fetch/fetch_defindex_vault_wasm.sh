@@ -1,0 +1,1 @@
+stellar contract fetch --id CDM7U3IQTUE65ZUFOBLV7NI46GYHNBSXAYAXJ3W3EK4Z7S2RE2EYIBDW --network testnet -o ./contracts/wasms/defindex_vault.wasm

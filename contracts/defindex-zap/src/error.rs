@@ -3,7 +3,7 @@ use soroban_sdk::contracterror;
 #[contracterror]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
 #[repr(u32)]
-pub enum SoroswapError {
+pub enum DeFindexError {
     /// Insufficient profit after swaps
     InsufficientProfit = 1,
     /// Invalid invocations (empty or exceeds limit)
@@ -15,5 +15,7 @@ pub enum SoroswapError {
     /// Unauthorized caller
     Unauthorized = 5,
     /// Invalid parameters
-    InvalidParams = 6,
+    InvalidArgument = 6,
+
+    NegativeNotAllowed= 7
 }

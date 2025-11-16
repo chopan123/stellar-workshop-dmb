@@ -1,0 +1,1 @@
+stellar contract deploy --source-account me --wasm ./target/wasm32v1-none/release/soroswap_simple.wasm  -- --router_address "CCMAPXWVZD4USEKDWRYS7DA4Y3D7E2SDMGBFJUCEXTC7VN6CUBGWPFUS"
