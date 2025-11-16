@@ -1,7 +1,6 @@
 #![no_std]
 use soroban_sdk::{
-    auth::{ContractContext, InvokerContractAuthEntry, SubContractInvocation},
-    contract, contractimpl, vec, Address, Env, IntoVal, Symbol, Val, Vec,
+    Address, Env, IntoVal, Symbol, Val, Vec, auth::{ContractContext, InvokerContractAuthEntry, SubContractInvocation}, contract, contractimpl, token, vec
 };
 
 mod soroswap_router;
@@ -36,6 +35,10 @@ impl SoroswapAuth {
         check_nonnegative_amount(amount)?;
         extend_instance_ttl(&e);
 
+        // First transfer the tokens from the user to this contract
+        let token_client = token::Client::new(&e, &token_in);
+        token_client.transfer(&caller, e.current_contract_address(), &amount);
+
         // Setting up Soroswap router client
         let soroswap_router_address = get_soroswap_router_address(&e);
         let soroswap_router_client = SoroswapRouterClient::new(&e, &soroswap_router_address);
@@ -67,23 +70,11 @@ impl SoroswapAuth {
             &amount, // Amount In
             &0, // Min amount out, 0 for simplicity here you would put your slippage
             &path, // Route
-            &caller, // To
+            &caller, // To, the tokens are being sent to the caller during the swap
             &u64::MAX, // deadline,  is timestamp
         );
 
         let total_swapped_amount = swap_result.last().unwrap();
-
-        // // Add liquidity
-        // let _result = soroswap_router_client.add_liquidity(
-        //     &usdc_address,
-        //     &xlm_address,
-        //     &swap_amount,
-        //     &total_swapped_amount,
-        //     &0,
-        //     &0,
-        //     &from,
-        //     &u64::MAX,
-        // );
 
         Ok(total_swapped_amount)
     }
