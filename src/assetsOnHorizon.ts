@@ -17,13 +17,37 @@ config();
 const horizonServer = new Horizon.Server("https://horizon-testnet.stellar.org");
 
 /**
+ * Helper function to load account with retry logic
+ *
+ * Horizon sometimes needs time to process ledger closes, so this function
+ * retries loading an account with exponential backoff to handle timing issues.
+ */
+async function loadAccountWithRetry(publicKey: string, maxRetries: number = 5) {
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      return await horizonServer.loadAccount(publicKey);
+    } catch (error) {
+      if (i === maxRetries - 1) {
+        // Last retry failed, throw the error
+        throw error;
+      }
+      // Wait before retrying (exponential backoff: 1s, 2s, 3s, 4s, 5s)
+      const delay = (i + 1) * 2000;
+      console.log(`⏳ Retry ${i + 1}/${maxRetries} loading account in ${delay}ms...`);
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+  }
+  throw new Error("Failed to load account after retries");
+}
+
+/**
  * 🌟 STELLAR WORKSHOP 🌟
- * 
+ *
  * This script demonstrates the complete lifecycle of creating a custom asset on Stellar:
  * 1. Create wallets (Asset Creator, Token Holder, Trader)
- * 2. Create a custom asset (RIO token)
+ * 2. Create a custom asset (PLTA token)
  * 3. Issue tokens and remove minting ability
- * 4. Create a liquidity pool (RIO/XLM)
+ * 4. Create a liquidity pool (PLTA/XLM)
  * 5. Perform asset swaps via path payments
  */
 
@@ -38,7 +62,7 @@ async function stellarWorkshop() {
     console.log("\n📝 STEP 1: Creating Wallets");
     console.log("-".repeat(30));
 
-    // Create the asset creator wallet (will issue the RIO token)
+    // Create the asset creator wallet (will issue the PLTA token)
     const assetCreatorWallet = Keypair.random();
     console.log("🏛️  Asset Creator Wallet created:");
     console.log(`   Public Key: ${assetCreatorWallet.publicKey()}`);
@@ -50,7 +74,7 @@ async function stellarWorkshop() {
     console.log(`   Public Key: ${tokenHolderWallet.publicKey()}`);
     console.log(`   Secret Key: ${tokenHolderWallet.secret()}`);
 
-    // Create the trader wallet (will swap XLM for RIO tokens)
+    // Create the trader wallet (will swap XLM for PLTA tokens)
     const traderWallet = Keypair.random();
     console.log("\n🏪 Trader Wallet created:");
     console.log(`   Public Key: ${traderWallet.publicKey()}`);
@@ -75,9 +99,9 @@ async function stellarWorkshop() {
     console.log("✅ Trader wallet funded successfully");
 
     // Check initial balances
-    const assetCreatorAccount = await horizonServer.loadAccount(assetCreatorWallet.publicKey());
-    const tokenHolderAccount = await horizonServer.loadAccount(tokenHolderWallet.publicKey());
-    const traderAccount = await horizonServer.loadAccount(traderWallet.publicKey());
+    const assetCreatorAccount = await loadAccountWithRetry(assetCreatorWallet.publicKey());
+    const tokenHolderAccount = await loadAccountWithRetry(tokenHolderWallet.publicKey());
+    const traderAccount = await loadAccountWithRetry(traderWallet.publicKey());
 
     console.log(`\n💰 Initial XLM balances:`);
     console.log(`   Asset Creator: ${assetCreatorAccount.balances[0].balance} XLM`);
@@ -85,34 +109,34 @@ async function stellarWorkshop() {
     console.log(`   Trader: ${traderAccount.balances[0].balance} XLM`);
 
     // ========================================
-    // STEP 3: CREATE CUSTOM ASSET (RIO TOKEN)
+    // STEP 3: CREATE CUSTOM ASSET (PLTA TOKEN)
     // ========================================
-    console.log("\n🪙 STEP 3: Creating Custom Asset (RIO Token)");
+    console.log("\n🪙 STEP 3: Creating Custom Asset (PLTA Token)");
     console.log("-".repeat(30));
 
-    // Create the RIO asset - issued by the Asset Creator
-    const RIO_ASSET = new Asset("RIO", assetCreatorWallet.publicKey());
-    console.log(`🏗️  RIO Asset created:`);
-    console.log(`   Asset Code: RIO`);
+    // Create the PLTA asset - issued by the Asset Creator
+    const PLTA_ASSET = new Asset("PLTA", assetCreatorWallet.publicKey());
+    console.log(`🏗️  PLTA Asset created:`);
+    console.log(`   Asset Code: PLTA`);
     console.log(`   Issuer: ${assetCreatorWallet.publicKey()}`);
 
     // ========================================
-    // STEP 4: ESTABLISH TRUSTLINE FOR RIO ASSET
+    // STEP 4: ESTABLISH TRUSTLINE FOR PLTA ASSET
     // ========================================
-    console.log("\n🤝 STEP 4: Creating Trustline for RIO Asset");
+    console.log("\n🤝 STEP 4: Creating Trustline for PLTA Asset");
     console.log("-".repeat(30));
 
-    // The Token Holder must create a trustline to receive RIO tokens
-    console.log("📄 Creating trustline from Token Holder to RIO asset...");
-    
-    let tokenHolderAccountUpdated = await horizonServer.loadAccount(tokenHolderWallet.publicKey());
+    // The Token Holder must create a trustline to receive PLTA tokens
+    console.log("📄 Creating trustline from Token Holder to PLTA asset...");
+
+    let tokenHolderAccountUpdated = await loadAccountWithRetry(tokenHolderWallet.publicKey());
     
     const trustlineTransaction = new TransactionBuilder(tokenHolderAccountUpdated, {
       fee: BASE_FEE,
       networkPassphrase: Networks.TESTNET
     })
     .addOperation(Operation.changeTrust({
-      asset: RIO_ASSET
+      asset: PLTA_ASSET
     }))
     .setTimeout(30)
     .build();
@@ -122,17 +146,18 @@ async function stellarWorkshop() {
     console.log("✅ Trustline created successfully");
 
     // ========================================
-    // STEP 5: ISSUE RIO TOKENS
+    // STEP 5: ISSUE PLTA TOKENS
     // ========================================
-    console.log("\n🏭 STEP 5: Issuing RIO Tokens");
+    console.log("\n🏭 STEP 5: Issuing PLTA Tokens");
     console.log("-".repeat(30));
 
-    // Issue 1,000,000 RIO tokens to the Token Holder
-    const TOKEN_SUPPLY = "1000000"; // 1 million RIO tokens
+    // Issue 1,000,000 PLTA tokens to the Token Holder
+    const TOKEN_SUPPLY = "1000000"; // 1 million PLTA tokens
     
-    console.log(`💰 Issuing ${TOKEN_SUPPLY} RIO tokens to Token Holder...`);
-    
-    let assetCreatorAccountUpdated = await horizonServer.loadAccount(assetCreatorWallet.publicKey());
+    console.log(`💰 Issuing ${TOKEN_SUPPLY} PLTA tokens to Token Holder...`);
+
+    let assetCreatorAccountUpdated = await loadAccountWithRetry(assetCreatorWallet.publicKey());
+    console.log("🚀 | stellarWorkshop | assetCreatorAccountUpdated:", assetCreatorAccountUpdated)
     
     const issueTokensTransaction = new TransactionBuilder(assetCreatorAccountUpdated, {
       fee: BASE_FEE,
@@ -140,7 +165,7 @@ async function stellarWorkshop() {
     })
     .addOperation(Operation.payment({
       destination: tokenHolderWallet.publicKey(),
-      asset: RIO_ASSET,
+      asset: PLTA_ASSET,
       amount: TOKEN_SUPPLY
     }))
     .setTimeout(30)
@@ -148,7 +173,7 @@ async function stellarWorkshop() {
 
     issueTokensTransaction.sign(assetCreatorWallet);
     await horizonServer.submitTransaction(issueTokensTransaction);
-    console.log("✅ RIO tokens issued successfully");
+    console.log("✅ PLTA tokens issued successfully");
 
     // ========================================
     // STEP 6: REMOVE MINTING ABILITY (LOCK SUPPLY)
@@ -157,8 +182,8 @@ async function stellarWorkshop() {
     console.log("-".repeat(30));
 
     console.log("🚫 Setting Asset Creator account options to disable further minting...");
-    
-    assetCreatorAccountUpdated = await horizonServer.loadAccount(assetCreatorWallet.publicKey());
+
+    assetCreatorAccountUpdated = await loadAccountWithRetry(assetCreatorWallet.publicKey());
     
     const lockSupplyTransaction = new TransactionBuilder(assetCreatorAccountUpdated, {
       fee: BASE_FEE,
@@ -175,10 +200,10 @@ async function stellarWorkshop() {
 
     lockSupplyTransaction.sign(assetCreatorWallet);
     await horizonServer.submitTransaction(lockSupplyTransaction);
-    console.log("✅ Asset Creator account locked - no more RIO tokens can be minted");
+    console.log("✅ Asset Creator account locked - no more PLTA tokens can be minted");
 
     // Check Token Holder balance
-    tokenHolderAccountUpdated = await horizonServer.loadAccount(tokenHolderWallet.publicKey());
+    tokenHolderAccountUpdated = await loadAccountWithRetry(tokenHolderWallet.publicKey());
     console.log(`\n📊 Token Holder now holds:`);
     tokenHolderAccountUpdated.balances.forEach(balance => {
       if (balance.asset_type === 'native') {
@@ -189,24 +214,24 @@ async function stellarWorkshop() {
     });
 
     // ========================================
-    // STEP 7: CREATE LIQUIDITY POOL (RIO/XLM)
+    // STEP 7: CREATE LIQUIDITY POOL (PLTA/XLM)
     // ========================================
-    console.log("\n🏊 STEP 7: Creating Liquidity Pool (RIO/XLM)");
+    console.log("\n🏊 STEP 7: Creating Liquidity Pool (PLTA/XLM)");
     console.log("-".repeat(30));
 
-    // Create XLM/RIO liquidity pool asset (XLM comes first lexicographically)
+    // Create XLM/PLTA liquidity pool asset (XLM comes first lexicographically)
     const XLM_ASSET = Asset.native();
-    const liquidityPoolAsset = new LiquidityPoolAsset(XLM_ASSET, RIO_ASSET, 30); // 0.30% fee
+    const liquidityPoolAsset = new LiquidityPoolAsset(XLM_ASSET, PLTA_ASSET, 30); // 0.30% fee
     const poolId = getLiquidityPoolId("constant_product", liquidityPoolAsset).toString('hex');
     
-    console.log(`🏊 Creating XLM/RIO liquidity pool:`);
+    console.log(`🏊 Creating XLM/PLTA liquidity pool:`);
     console.log(`   Pool ID: ${poolId}`);
     console.log(`   Fee: 0.30%`);
 
     // Token Holder creates trustline to the liquidity pool
     console.log("🤝 Creating trustline to liquidity pool...");
-    
-    tokenHolderAccountUpdated = await horizonServer.loadAccount(tokenHolderWallet.publicKey());
+
+    tokenHolderAccountUpdated = await loadAccountWithRetry(tokenHolderWallet.publicKey());
     
     const poolTrustlineTransaction = new TransactionBuilder(tokenHolderAccountUpdated, {
       fee: BASE_FEE,
@@ -228,16 +253,16 @@ async function stellarWorkshop() {
     console.log("\n💧 STEP 8: Depositing Liquidity to Pool");
     console.log("-".repeat(30));
 
-    // Deposit liquidity: 1000 XLM + 500,000 RIO (1 XLM = 500 RIO initial rate)
+    // Deposit liquidity: 1000 XLM + 500,000 PLTA (1 XLM = 500 PLTA initial rate)
     const XLM_DEPOSIT = "1000";
-    const RIO_DEPOSIT = "500000";
+    const PLTA_DEPOSIT = "500000";
     
     console.log(`💰 Depositing liquidity:`);
     console.log(`   ${XLM_DEPOSIT} XLM`);
-    console.log(`   ${RIO_DEPOSIT} RIO`);
-    console.log(`   Initial rate: 1 XLM = 500 RIO`);
+    console.log(`   ${PLTA_DEPOSIT} PLTA`);
+    console.log(`   Initial rate: 1 XLM = 500 PLTA`);
 
-    tokenHolderAccountUpdated = await horizonServer.loadAccount(tokenHolderWallet.publicKey());
+    tokenHolderAccountUpdated = await loadAccountWithRetry(tokenHolderWallet.publicKey());
     
     const depositLiquidityTransaction = new TransactionBuilder(tokenHolderAccountUpdated, {
       fee: BASE_FEE,
@@ -246,7 +271,7 @@ async function stellarWorkshop() {
     .addOperation(Operation.liquidityPoolDeposit({
       liquidityPoolId: poolId,
       maxAmountA: XLM_DEPOSIT, // XLM amount
-      maxAmountB: RIO_DEPOSIT, // RIO amount
+      maxAmountB: PLTA_DEPOSIT, // PLTA amount
       minPrice: "0.0001",
       maxPrice: "10000"
     }))
@@ -258,7 +283,7 @@ async function stellarWorkshop() {
     console.log("✅ Liquidity deposited successfully");
 
     // Check pool balances
-    tokenHolderAccountUpdated = await horizonServer.loadAccount(tokenHolderWallet.publicKey());
+    tokenHolderAccountUpdated = await loadAccountWithRetry(tokenHolderWallet.publicKey());
     console.log(`\n📊 Token Holder balances after liquidity deposit:`);
     tokenHolderAccountUpdated.balances.forEach(balance => {
       if (balance.asset_type === 'native') {
@@ -271,22 +296,22 @@ async function stellarWorkshop() {
     });
 
     // ========================================
-    // STEP 9: TRADER SWAPS XLM FOR RIO
+    // STEP 9: TRADER SWAPS XLM FOR PLTA
     // ========================================
-    console.log("\n🔄 STEP 9: Trader Swaps XLM for RIO");
+    console.log("\n🔄 STEP 9: Trader Swaps XLM for PLTA");
     console.log("-".repeat(30));
 
-    // First, trader needs to create trustline to RIO
-    console.log("🤝 Creating trustline from Trader to RIO asset...");
-    
-    let traderAccountUpdated = await horizonServer.loadAccount(traderWallet.publicKey());
+    // First, trader needs to create trustline to PLTA
+    console.log("🤝 Creating trustline from Trader to PLTA asset...");
+
+    let traderAccountUpdated = await loadAccountWithRetry(traderWallet.publicKey());
     
     const traderTrustlineTransaction = new TransactionBuilder(traderAccountUpdated, {
       fee: BASE_FEE,
       networkPassphrase: Networks.TESTNET
     })
     .addOperation(Operation.changeTrust({
-      asset: RIO_ASSET,
+      asset: PLTA_ASSET,
       limit: "1000000000"
     }))
     .setTimeout(30)
@@ -294,17 +319,17 @@ async function stellarWorkshop() {
 
     traderTrustlineTransaction.sign(traderWallet);
     await horizonServer.submitTransaction(traderTrustlineTransaction);
-    console.log("✅ Trader trustline to RIO created");
+    console.log("✅ Trader trustline to PLTA created");
 
-    // Now perform the swap: 100 XLM for RIO tokens
+    // Now perform the swap: 100 XLM for PLTA tokens
     const SWAP_AMOUNT = "100";
     
     console.log(`🔄 Performing path payment:`);
     console.log(`   Sending: ${SWAP_AMOUNT} XLM`);
-    console.log(`   Receiving: RIO tokens (market rate)`);
-    console.log(`   Path: XLM → RIO (via liquidity pool)`);
+    console.log(`   Receiving: PLTA tokens (market rate)`);
+    console.log(`   Path: XLM → PLTA (via liquidity pool)`);
 
-    traderAccountUpdated = await horizonServer.loadAccount(traderWallet.publicKey());
+    traderAccountUpdated = await loadAccountWithRetry(traderWallet.publicKey());
     
     const pathPaymentTransaction = new TransactionBuilder(traderAccountUpdated, {
       fee: BASE_FEE,
@@ -314,8 +339,8 @@ async function stellarWorkshop() {
       sendAsset: XLM_ASSET,
       sendAmount: SWAP_AMOUNT,
       destination: traderWallet.publicKey(),
-      destAsset: RIO_ASSET,
-      destMin: "1", // Minimum RIO to receive (very low for demo)
+      destAsset: PLTA_ASSET,
+      destMin: "1", // Minimum PLTA to receive (very low for demo)
       path: [] // Direct swap through AMM
     }))
     .setTimeout(30)
@@ -332,7 +357,7 @@ async function stellarWorkshop() {
     console.log("-".repeat(30));
 
     // Check final balances
-    traderAccountUpdated = await horizonServer.loadAccount(traderWallet.publicKey());
+    traderAccountUpdated = await loadAccountWithRetry(traderWallet.publicKey());
     
     console.log(`\n📊 Final Trader balances:`);
     traderAccountUpdated.balances.forEach(balance => {
@@ -351,15 +376,15 @@ async function stellarWorkshop() {
     console.log("=".repeat(60));
     console.log("\n✨ What we accomplished:");
     console.log("   1. ✅ Created 3 wallets (Asset Creator, Token Holder, Trader)");
-    console.log("   2. ✅ Created custom RIO asset");
-    console.log("   3. ✅ Issued 1,000,000 RIO tokens");
+    console.log("   2. ✅ Created custom PLTA asset");
+    console.log("   3. ✅ Issued 1,000,000 PLTA tokens");
     console.log("   4. ✅ Locked token supply (no more minting possible)");
-    console.log("   5. ✅ Created XLM/RIO liquidity pool");
-    console.log("   6. ✅ Deposited liquidity (1000 XLM + 500,000 RIO)");
-    console.log("   7. ✅ Performed asset swap (XLM → RIO)");
+    console.log("   5. ✅ Created XLM/PLTA liquidity pool");
+    console.log("   6. ✅ Deposited liquidity (1000 XLM + 500,000 PLTA)");
+    console.log("   7. ✅ Performed asset swap (XLM → PLTA)");
     
     console.log("\n🔗 Important addresses:");
-    console.log(`   RIO Asset: ${RIO_ASSET.code}:${RIO_ASSET.issuer}`);
+    console.log(`   PLTA Asset: ${PLTA_ASSET.code}:${PLTA_ASSET.issuer}`);
     console.log(`   Liquidity Pool ID: ${poolId}`);
     console.log(`   Token Holder: ${tokenHolderWallet.publicKey()}`);
     console.log(`   Trader: ${traderWallet.publicKey()}`);
