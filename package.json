@@ -1,11 +1,17 @@
 {
-  "name": "workshop-rio",
+  "name": "stellar-workshop",
   "version": "1.0.0",
+  "description": "Educational workshops for Stellar blockchain and DeFi protocols",
   "main": "dist/main.js",
-  "author": "coderipper",
-  "license": "MIT",
+  "author": "Palta Labs",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/paltalabs/stellar-workshop.git"
+  },
   "scripts": {
-    "soroswap": "ts-node src/soroswap.ts"
+    "soroswap": "ts-node src/soroswap.ts",
+    "defindex": "ts-node src/defindex.ts"
   },
   "dependencies": {
     "@defindex/sdk": "^0.1.1",
