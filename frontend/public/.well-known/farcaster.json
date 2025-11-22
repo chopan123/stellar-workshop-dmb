@@ -23,8 +23,8 @@
     "primaryCategory": "finance",
     "tags": ["stellar", "wallet", "crossmint", "defi"],
     "heroImageUrl": "https://crossmintminiapp.netlify.app/hero.png",
-    "tagline": "Seamless wallet management on Stellar",
-    "ogTitle": "Crossmint Stellar Mini App   - Crossmint Wallet Integration",
+    "tagline": "Wallet for Stellar",
+    "ogTitle": "Stellar Wallet",
     "ogDescription": "Crossmint Wallet Integration for Stellar Network",
     "ogImageUrl": "https://crossmintminiapp.netlify.app/og-image.png",
     "noindex": false
