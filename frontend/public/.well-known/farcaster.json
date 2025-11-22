@@ -1,7 +1,8 @@
 {
   "accountAssociation": {
-    "header": "farcaster-verify",
-    "payload": "your-verification-payload-here"
+    "header": "eyJmaWQiOjE1MTIxMzgsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHhiZUFmMjYwQzlGOUQ3N0Y2OWU2N0Y5N2VFOTlBRTgwNjFjYmE1MWU5In0",
+    "payload": "eyJkb21haW4iOiJjcm9zc21pbnRtaW5pYXBwLm5ldGxpZnkuYXBwIn0",
+    "signature": "TuIeltGnN0bJq7FoycK5OiHopsh8J/alqGZR2CzXocdebO6piv7mucWeLcHECxaVa87EqFkzALz5TJdTyS3QVRs="
   },
   "baseBuilder": {
     "ownerAddress": "0x"
