@@ -7,14 +7,28 @@ function App() {
     <main className="page">
       <header className="hero">
         <div className="hero-content">
-          <p className="eyebrow">Crossmint Wallet Demo</p>
-          <h1>Crossmint Wallet Integration</h1>
+          <p className="eyebrow">Base Mini App Showcase</p>
+          <h1>Base Mini App + Stellar Crossmint Smart Account</h1>
           <p className="subtitle">
-            This demonstration showcases Crossmint's wallet capabilities for creating and managing
-            blockchain wallets. Experience seamless authentication, automatic wallet creation, and
-            real-time balance tracking on the Stellar network.
+            This repository demonstrates how to create a Base mini app that controls a Stellar Crossmint smart account.
+            Learn how to integrate Base's mini app framework with Crossmint's wallet SDK to build powerful
+            on-chain applications on the Stellar network.
           </p>
           <div className="features">
+            <div className="feature-item">
+              <span className="feature-icon">📱</span>
+              <div>
+                <strong>Base Mini App</strong>
+                <p>Built with Base's mini app framework for seamless Farcaster integration</p>
+              </div>
+            </div>
+            <div className="feature-item">
+              <span className="feature-icon">⭐</span>
+              <div>
+                <strong>Stellar Smart Account</strong>
+                <p>Control Crossmint smart accounts on the Stellar network</p>
+              </div>
+            </div>
             <div className="feature-item">
               <span className="feature-icon">🔐</span>
               <div>
@@ -23,24 +37,10 @@ function App() {
               </div>
             </div>
             <div className="feature-item">
-              <span className="feature-icon">💼</span>
-              <div>
-                <strong>Automatic Wallet Creation</strong>
-                <p>Wallets are created automatically on first login</p>
-              </div>
-            </div>
-            <div className="feature-item">
               <span className="feature-icon">⚡</span>
               <div>
                 <strong>Real-time Balances</strong>
-                <p>View your wallet balance and assets in real-time</p>
-              </div>
-            </div>
-            <div className="feature-item">
-              <span className="feature-icon">🌐</span>
-              <div>
-                <strong>Chain Agnostic</strong>
-                <p>Works across Solana, EVM chains, Stellar, and more</p>
+                <p>View your Stellar smart account balance and assets in real-time</p>
               </div>
             </div>
           </div>
@@ -55,16 +55,19 @@ function App() {
         <h2>How it works</h2>
         <ol className="steps-list">
           <li>
+            <strong>Base Mini App Integration</strong> - This app is wrapped as a Base mini app using the Farcaster Mini App SDK
+          </li>
+          <li>
             <strong>Click "Login"</strong> to authenticate using your preferred method (email, social, or Web3)
           </li>
           <li>
-            <strong>Wallet is created automatically</strong> on the Stellar network when you first log in
+            <strong>Stellar Smart Account Creation</strong> - A Crossmint smart account is created automatically on the Stellar network when you first log in
           </li>
           <li>
-            <strong>View your wallet address</strong> and real-time balance below
+            <strong>Control Your Smart Account</strong> - View your Stellar smart account address and real-time balance below
           </li>
           <li>
-            <strong>Balances update automatically</strong> every 10 seconds to show your latest assets
+            <strong>Real-time Updates</strong> - Balances update automatically every 10 seconds to show your latest Stellar assets
           </li>
         </ol>
       </section>
@@ -72,10 +75,18 @@ function App() {
       <footer>
         <p>
           Built with{' '}
+          <a href="https://docs.base.org/mini-apps" target="_blank" rel="noreferrer">
+            Base Mini Apps
+          </a>
+          {' '}·{' '}
           <a href="https://docs.crossmint.com/wallets/quickstarts/react" target="_blank" rel="noreferrer">
             Crossmint Wallets SDK
           </a>
           {' '}· Powered by{' '}
+          <a href="https://base.org" target="_blank" rel="noreferrer">
+            Base
+          </a>
+          {' '}and{' '}
           <a href="https://www.crossmint.com" target="_blank" rel="noreferrer">
             Crossmint
           </a>
