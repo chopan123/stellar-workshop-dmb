@@ -8,24 +8,24 @@
   },
   "miniapp": {
     "version": "1",
-    "name": "Stellar Workshop",
-    "homeUrl": "https://your-domain.com",
-    "iconUrl": "https://your-domain.com/icon.png",
-    "splashImageUrl": "https://your-domain.com/splash.png",
+    "name": "Crossmint Stellar Mini App ",
+    "homeUrl": "https://crossmintminiapp.netlify.app",
+    "iconUrl": "https://crossmintminiapp.netlify.app/icon.png",
+    "splashImageUrl": "https://crossmintminiapp.netlify.app/splash.png",
     "splashBackgroundColor": "#FFFFFF",
-    "webhookUrl": "https://your-domain.com/api/webhook",
+    "webhookUrl": "https://crossmintminiapp.netlify.app/api/webhook",
     "subtitle": "Crossmint Wallet Integration for Stellar Network",
     "description": "A demonstration showcasing Crossmint's wallet capabilities for creating and managing blockchain wallets on the Stellar network.",
     "screenshotUrls": [
-      "https://your-domain.com/screenshot1.png"
+      "https://crossmintminiapp.netlify.app/screenshot1.png"
     ],
     "primaryCategory": "finance",
     "tags": ["stellar", "wallet", "crossmint", "defi"],
-    "heroImageUrl": "https://your-domain.com/hero.png",
+    "heroImageUrl": "https://crossmintminiapp.netlify.app/hero.png",
     "tagline": "Seamless wallet management on Stellar",
-    "ogTitle": "Stellar Workshop - Crossmint Wallet Integration",
+    "ogTitle": "Crossmint Stellar Mini App   - Crossmint Wallet Integration",
     "ogDescription": "Crossmint Wallet Integration for Stellar Network",
-    "ogImageUrl": "https://your-domain.com/og-image.png",
+    "ogImageUrl": "https://crossmintminiapp.netlify.app/og-image.png",
     "noindex": false
   }
 }

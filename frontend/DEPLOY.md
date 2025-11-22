@@ -46,6 +46,10 @@
 3. **Configure Environment Variables**:
    - Site settings → Environment variables
    - Add `VITE_CROSSMINT_API_KEY` if needed
+   - **Important**: Add `SECRETS_SCAN_OMIT_KEYS` with value `VITE_CROSSMINT_API_KEY`
+     - This tells Netlify to ignore this key in secrets scanning
+     - `VITE_CROSSMINT_API_KEY` is a public client-side API key (expected in build output)
+     - Without this, builds will fail due to secrets scanning detecting it in the bundle
 
 **Note**: Two `netlify.toml` files are provided:
 - Root level (`/netlify.toml`) - for deploying from repository root
