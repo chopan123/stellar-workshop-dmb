@@ -1,0 +1,32 @@
+{
+  "accountAssociation": {
+    "header": "farcaster-verify",
+    "payload": "your-verification-payload-here"
+  },
+  "baseBuilder": {
+    "ownerAddress": "0x"
+  },
+  "miniapp": {
+    "version": "1",
+    "name": "Stellar Workshop",
+    "homeUrl": "https://your-domain.com",
+    "iconUrl": "https://your-domain.com/icon.png",
+    "splashImageUrl": "https://your-domain.com/splash.png",
+    "splashBackgroundColor": "#FFFFFF",
+    "webhookUrl": "https://your-domain.com/api/webhook",
+    "subtitle": "Crossmint Wallet Integration for Stellar Network",
+    "description": "A demonstration showcasing Crossmint's wallet capabilities for creating and managing blockchain wallets on the Stellar network.",
+    "screenshotUrls": [
+      "https://your-domain.com/screenshot1.png"
+    ],
+    "primaryCategory": "finance",
+    "tags": ["stellar", "wallet", "crossmint", "defi"],
+    "heroImageUrl": "https://your-domain.com/hero.png",
+    "tagline": "Seamless wallet management on Stellar",
+    "ogTitle": "Stellar Workshop - Crossmint Wallet Integration",
+    "ogDescription": "Crossmint Wallet Integration for Stellar Network",
+    "ogImageUrl": "https://your-domain.com/og-image.png",
+    "noindex": false
+  }
+}
+
