@@ -27,7 +27,7 @@
    - Update `frontend/index.html` meta tags with your domain
    - Commit and push - Vercel will auto-deploy
 
-### Option 2: Netlify
+### Option 2: Netlify (✅ Fully Configured)
 
 1. **Push your code to GitHub**
 
@@ -36,8 +36,9 @@
    - Sign in with GitHub
    - Click "Add new site" → "Import an existing project"
    - Select your repository
-   - **Build settings**:
-     - Base directory: `frontend`
+   - **Netlify will auto-detect the `netlify.toml` config!**
+   - If manual setup needed:
+     - Base directory: `frontend` (or leave empty if using root `netlify.toml`)
      - Build command: `npm run build`
      - Publish directory: `frontend/dist`
    - Click "Deploy site"
@@ -45,6 +46,16 @@
 3. **Configure Environment Variables**:
    - Site settings → Environment variables
    - Add `VITE_CROSSMINT_API_KEY` if needed
+
+**Note**: Two `netlify.toml` files are provided:
+- Root level (`/netlify.toml`) - for deploying from repository root
+- Frontend level (`/frontend/netlify.toml`) - for deploying from frontend directory
+
+Both include:
+- ✅ SPA routing support (all routes → index.html)
+- ✅ `.well-known` directory headers for Farcaster manifest
+- ✅ Static asset caching
+- ✅ Security headers
 
 ### Option 3: Cloudflare Pages
 

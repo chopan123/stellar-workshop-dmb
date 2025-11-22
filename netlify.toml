@@ -1,7 +1,10 @@
+# Netlify configuration for root-level deployment
+# This config tells Netlify to build from the frontend directory
+
 [build]
+  base = "frontend"
   command = "npm run build"
-  publish = "dist"
-  base = "."
+  publish = "frontend/dist"
 
 [build.environment]
   NODE_VERSION = "20"
