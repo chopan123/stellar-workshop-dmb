@@ -15,7 +15,7 @@
     "splashImageUrl": "https://crossmintminiapp.netlify.app/splash.png",
     "splashBackgroundColor": "#FFFFFF",
     "webhookUrl": "https://crossmintminiapp.netlify.app/api/webhook",
-    "subtitle": "Crossmint Wallet Integration for Stellar Network",
+    "subtitle": "Wallet for Stellar",
     "description": "A demonstration showcasing Crossmint's wallet capabilities for creating and managing blockchain wallets on the Stellar network.",
     "screenshotUrls": [
       "https://crossmintminiapp.netlify.app/screenshot1.png"
